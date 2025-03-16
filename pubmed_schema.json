@@ -1,0 +1,181 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PubMed Search Assistant API",
+    "description": "An API for searching PubMed and providing literature recommendations based on user queries.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/v1"
+    }
+  ],
+  "paths": {
+    "/search_pubmed": {
+      "post": {
+        "summary": "Search PubMed with MeSH terms",
+        "operationId": "searchPubMed",
+        "description": "Searches PubMed using MeSH terms based on user query and returns relevant papers.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/refine_search": {
+      "post": {
+        "summary": "Refine PubMed search",
+        "operationId": "refinePubMedSearch",
+        "description": "Refines PubMed search by modifying MeSH terms to increase or decrease result count.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefineRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refined search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SearchRequest": {
+        "type": "object",
+        "required": ["query"],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "User's research topic or keywords."
+          },
+          "maxResults": {
+            "type": "integer",
+            "description": "Maximum number of results to return (default: 5).",
+            "default": 5
+          }
+        }
+      },
+      "RefineRequest": {
+        "type": "object",
+        "required": ["originalQuery", "refinementType"],
+        "properties": {
+          "originalQuery": {
+            "type": "string",
+            "description": "Original search query."
+          },
+          "previousMeshTerms": {
+            "type": "string",
+            "description": "Previous MeSH terms used for search."
+          },
+          "refinementType": {
+            "type": "string",
+            "description": "Type of refinement: 'increase', 'decrease', or 'keep'.",
+            "enum": ["increase", "decrease", "keep"]
+          },
+          "additionalCriteria": {
+            "type": "string",
+            "description": "Additional criteria to refine the search."
+          },
+          "maxResults": {
+            "type": "integer",
+            "description": "Maximum number of results to return (default: 5).",
+            "default": 5
+          }
+        }
+      },
+      "SearchResponse": {
+        "type": "object",
+        "properties": {
+          "meshTerms": {
+            "type": "string",
+            "description": "MeSH terms used for the search."
+          },
+          "searchUrl": {
+            "type": "string",
+            "description": "URL for the PubMed search that was performed."
+          },
+          "totalResults": {
+            "type": "integer",
+            "description": "Total number of papers found."
+          },
+          "papers": {
+            "type": "array",
+            "description": "Representative papers from the search.",
+            "items": {
+              "$ref": "#/components/schemas/Paper"
+            }
+          }
+        }
+      },
+      "Paper": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the paper."
+          },
+          "authors": {
+            "type": "string",
+            "description": "List of authors."
+          },
+          "journal": {
+            "type": "string",
+            "description": "Journal name."
+          },
+          "publicationDate": {
+            "type": "string",
+            "description": "Publication date of the paper."
+          },
+          "doi": {
+            "type": "string",
+            "description": "Digital Object Identifier."
+          },
+          "pmid": {
+            "type": "string",
+            "description": "PubMed ID."
+          },
+          "abstract": {
+            "type": "string",
+            "description": "Abstract of the paper."
+          },
+          "url": {
+            "type": "string",
+            "description": "URL to the paper in PubMed."
+          }
+        }
+      }
+    }
+  }
+}
